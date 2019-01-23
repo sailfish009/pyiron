@@ -755,9 +755,10 @@ class Project(ProjectPath):
             recursive (bool): [True/False] compress all jobs in all subprojects - default=False
         """
         for job_id in self.get_job_ids(recursive=recursive):
-            job = self.inspect(job_id)
-            if job.status == 'finished':
-                job.compress()
+            if job_id is not None:
+                job = self.inspect(job_id)
+                if job.status == 'finished':
+                    job.compress()
 
     def delete_output_files_jobs(self, recursive=False):
         """
