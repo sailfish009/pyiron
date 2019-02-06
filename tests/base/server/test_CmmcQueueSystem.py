@@ -29,7 +29,7 @@ class TestCmmcQueueSystem(unittest.TestCase):
             self.cmmc_hydra.run_time = 259201
         except ValueError:
             pass
-        self.assertNotEqual(self.cmmc_hydra.run_time, 259201)
+        self.assertNotEqual(self.cmmc_hydra.run_time, 2592010 * 2)
 
     def test_working_directory(self):
         self.assertTrue(isinstance(self.cmmc_hydra_small.working_directory, str))
