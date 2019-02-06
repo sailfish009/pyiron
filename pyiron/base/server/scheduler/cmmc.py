@@ -39,7 +39,7 @@ class Cmmc(JobScheduler):
         queues_available = [Queue(name='impi_hydra_small', mini_cores=1, maxi_cores=40, divisor_list=[1, 2, 4, 5, 8, 10],
                                   run_time_limit=604800),
                             Queue(name='impi_hydra', mini_cores=20, maxi_cores=4240, divisor_list=20,
-                                  run_time_limit=259200),
+                                  run_time_limit=2592000 * 2),
                             Queue(name='impi_hydra_cmfe.*', mini_cores=40, maxi_cores=1280, divisor_list=40,
                                   run_time_limit=259200),
                             Queue(name='impi_hy*', mini_cores=40, maxi_cores=1280, divisor_list=40,
