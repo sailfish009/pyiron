@@ -42,10 +42,10 @@ class TestVaspStructure(unittest.TestCase):
         for f in self.file_list:
             if f.split("/")[-1] == "POSCAR_velocity":
                 atoms, velocities = read_atoms(filename=f, return_velocities=True)
-                self.assertEqual(len(atoms), 571)
-                self.assertEqual(np.shape(velocities), (571, 3))
-                self.assertEqual(len(atoms.selective_dynamics), 571)
-                self.assertEqual(len(atoms.select_index("Mg")), 160)
+                self.assertEqual(len(atoms), 19)
+                self.assertEqual(np.shape(velocities), (19, 3))
+                self.assertEqual(len(atoms.selective_dynamics), 19)
+                self.assertEqual(len(atoms.select_index("Mg")), 10)
                 self.assertIsInstance(atoms.selective_dynamics, SparseList)
                 neon_indices = atoms.select_index("Ne")
                 hydrogen_indices = atoms.select_index("H")
@@ -62,6 +62,12 @@ class TestVaspStructure(unittest.TestCase):
                 self.assertTrue(np.array_equal(sel_dyn[hydrogen_indices], truth_array))
                 velocities_neon = np.zeros_like(np.array(velocities)[neon_indices])
                 self.assertTrue(np.array_equal(np.array(velocities)[neon_indices], velocities_neon))
+
+            if f.split("/")[-1] == "POSCAR_no_species":
+                atoms = read_atoms(filename=f)
+                self.assertEqual(len(atoms), 33)
+                self.assertEqual(len(atoms.selective_dynamics), 33)
+
             elif f.split("/")[-1] != "POSCAR_spoilt":
                 atoms = read_atoms(filename=f)
                 self.assertIsInstance(atoms, Atoms)
@@ -114,6 +120,12 @@ class TestVaspStructure(unittest.TestCase):
         truth_array = np.empty_like(struct.positions, dtype=bool)
         truth_array[:] = [True, True, True]
         self.assertTrue(np.array_equal(np.array(test_atoms.selective_dynamics.list()), truth_array))
+        os.remove(posixpath.join(self.file_location, "POSCAR_test"))
+        struct = self.structure.copy()
+        struct.add_tag(selective_dynamics=[True, True, True])
+        write_poscar(structure=struct, filename=posixpath.join(self.file_location, "POSCAR_test"), cartesian=False)
+        test_atoms_new = read_atoms(posixpath.join(self.file_location, "POSCAR_test"))
+        self.assertEqual(test_atoms, test_atoms_new)
         os.remove(posixpath.join(self.file_location, "POSCAR_test"))
 
     def test_vasp_sorter(self):
