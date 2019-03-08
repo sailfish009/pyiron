@@ -72,10 +72,7 @@ class LammpsInteractive(LammpsBase, GenericInteractive):
             positions = np.array(positions).reshape(-1, 3)
             positions = np.dot(positions, self._interactive_prism.R)
         positions = np.array(positions).flatten()
-        if self.server.run_mode.interactive_non_modal:
-            self._interactive_library.scatter_atoms("x", 1, 3, positions)
-        else:
-            self._interactive_library.scatter_atoms("x", 1, 3, (len(positions) * c_double)(*positions))
+        self._interactive_library.scatter_atoms("x", 1, 3, (len(positions) * c_double)(*positions))
         self._interactive_lib_command('change_box all remap')
 
     def interactive_cells_getter(self):
@@ -123,10 +120,7 @@ class LammpsInteractive(LammpsBase, GenericInteractive):
                 el = el_obj_lst[id_el]
                 el_dict[el] = id_eam + 1
         elem_all = np.array([el_dict[self._structure_current.species[el]] for el in indices])
-        if self.server.run_mode.interactive_non_modal:
-            self._interactive_library.scatter_atoms('type', 0, 1, elem_all)
-        else:
-            self._interactive_library.scatter_atoms('type', 0, 1, (len(elem_all) * c_int)(*elem_all))
+        self._interactive_library.scatter_atoms('type', 0, 1, (len(elem_all) * c_int)(*elem_all))
 
     def interactive_volume_getter(self):
         return self._interactive_library.get_thermo('vol')
@@ -247,12 +241,8 @@ class LammpsInteractive(LammpsBase, GenericInteractive):
         self._interactive_lib_command('create_atoms 1 random ' + str(len(structure)) + ' 12345 1')
         positions = structure.positions.flatten()
         elem_all = np.array([el_dict[el] for el in structure.get_chemical_elements()])
-        if self.server.run_mode.interactive_non_modal:
-            self._interactive_library.scatter_atoms("x", 1, 3, positions)
-            self._interactive_library.scatter_atoms('type', 0, 1, elem_all)
-        else:
-            self._interactive_library.scatter_atoms("x", 1, 3, (len(positions) * c_double)(*positions))
-            self._interactive_library.scatter_atoms('type', 0, 1, (len(elem_all) * c_int)(*elem_all))
+        self._interactive_library.scatter_atoms("x", 1, 3, (len(positions) * c_double)(*positions))
+        self._interactive_library.scatter_atoms('type', 0, 1, (len(elem_all) * c_int)(*elem_all))
         self._interactive_lib_command('change_box all remap')
         self._interactive_lammps_input()
         self._interactive_set_potential()
