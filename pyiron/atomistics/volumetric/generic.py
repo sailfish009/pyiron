@@ -145,8 +145,8 @@ class VolumetricData(object):
             f.write("z is the fastest index \n")
             np.savetxt(f, head_array, fmt='%4d %.6f %.6f %.6f')
             np.savetxt(f, position_array, fmt='%4d %.6f %.6f %.6f %.6f')
-            np.savetxt(f, reshaped_data, fmt='%.5e')
-            np.savetxt(f, last_line, fmt='%.5e')
+            np.savetxt(f, reshaped_data, fmt='%.12e')
+            np.savetxt(f, last_line, fmt='%.12e')
 
     def read_cube_file(self, filename="cube_file.cube"):
         """
@@ -198,6 +198,6 @@ class VolumetricData(object):
                 flattened_data /= self.atoms.get_volume()
             num_lines = int(len(flattened_data) / 5) * 5
             reshaped_data = np.reshape(flattened_data[0:num_lines], (-1, 5))
-            np.savetxt(f, reshaped_data, fmt="%.12f")
+            np.savetxt(f, reshaped_data, fmt="%.12e")
             if len(flattened_data) % 5 > 0:
-                np.savetxt(f, [flattened_data[num_lines:]], fmt="%.12f")
+                np.savetxt(f, [flattened_data[num_lines:]], fmt="%.12e")
