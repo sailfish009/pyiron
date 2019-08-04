@@ -153,7 +153,6 @@ class VaspVolumetricData(VolumetricData):
             list: A list of the volumetric data (length >1 for CHGCAR files with spin)
 
         """
-
         filesize = os.path.getsize(filename)
         if not filesize > 0:
             s = Settings()
