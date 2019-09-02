@@ -49,10 +49,10 @@ def _download_resources(zip_file="resources.zip",
     with ZipFile(temp_zip_file) as zip_file_object:
         zip_file_object.extractall(temp_directory)
     copytree(temp_extract_folder, user_directory)
-    if os.name != 'nt':  # 
+    if os.name != 'nt':  #
         for root, dirs, files in os.walk(user_directory):
-            for file in files: 
-                if '.sh' in file: 
+            for file in files:
+                if '.sh' in file:
                     st = os.stat(os.path.join(root, file))
                     os.chmod(os.path.join(root, file), st.st_mode | stat.S_IEXEC)
     os.remove(temp_zip_file)
@@ -68,15 +68,40 @@ def _write_config_file(file_name='~/.pyiron', project_path='~/pyiron/projects', 
         project_path (str): the location where pyiron is going to store the pyiron projects
         resource_path (str): the location where the resouces (executables, potentials, ...) for pyiron are stored.
     """
-    config_file = os.path.normpath(os.path.abspath(os.path.expanduser(file_name)))
+    config_file   = os.path.normpath(os.path.abspath(os.path.expanduser(file_name)))
+    project_path  = os.path.normpath(os.path.abspath(os.path.expanduser(project_path)))
+    resource_path = os.path.normpath(os.path.abspath(os.path.expanduser(resource_path)))
+    
+    if not os.path.exists(project_path):
+        os.makedirs(project_path)
+
+    if not os.path.exists(resource_path):
+        os.makedirs(resource_path)
+        
     if not os.path.isfile(config_file):
         with open(config_file, 'w') as cf:
             cf.writelines(['[DEFAULT]\n',
                            'PROJECT_PATHS = ' + project_path + '\n',
                            'RESOURCE_PATHS = ' + resource_path + '\n'])
-        project_path = os.path.normpath(os.path.abspath(os.path.expanduser(project_path)))
-        if not os.path.exists(project_path):
-            os.makedirs(project_path)
+
+def _write_environ_var(config_file_name='~/.pyiron'):
+    config_file = os.path.normpath(os.path.abspath(os.path.expanduser(config_file_name)))
+
+    # Check whether bashrc already contains PYIRONCONFIG, this can happen in bashrc has not been sourced yet
+    with open(os.path.expanduser("~/.bashrc"), "r") as outfile:
+        lines = outfile.readlines()
+    if not any(['PYIRONCONFIG' in line for line in lines]):
+        # Write to bashrc
+        with open(os.path.expanduser("~/.bashrc"), "a") as outfile:
+            if not lines[-1]=='\n': outfile.write('\n')
+            outfile.write("# PYIRONCONFIG for pyiron config file location\n")
+            outfile.write("export PYIRONCONFIG={}\n".format(config_file))
+        print('Please source the .bashrc after the initial configuration or reset your terminal.')
+        print('')
+        print('$ source ~/.bashrc')
+    else:
+        raise SystemError('Your .bashrc has the correct environment variable but has not been sourced. Please execute the following in your bash shell: source ~/.bashrc')
+
 
 
 def install_pyiron(config_file_name='~/.pyiron',
@@ -96,7 +121,9 @@ def install_pyiron(config_file_name='~/.pyiron',
         giturl_for_zip_file (str): url for the zipped resources file on github
         git_folder_name (str): name of the extracted folder
     """
+    # Build directories if install_pyiron has been skipped for custom pyiron config file       
     _write_config_file(file_name=config_file_name, project_path=project_path, resource_path=resource_directory)
+    _write_environ_var(config_file_name=config_file_name)
     _download_resources(zip_file=zip_file,
                         resource_directory=resource_directory,
                         giturl_for_zip_file=giturl_for_zip_file,

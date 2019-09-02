@@ -75,16 +75,11 @@ class Settings(with_metaclass(Singleton)):
                                'sql_database': None}
         environment_keys = os.environ.keys()
         if 'PYIRONCONFIG' in environment_keys:
-            config_file = environment_keys['PYIRONCONFIG']
+            config_file = os.environ['PYIRONCONFIG']
         else:
-            config_file = os.path.expanduser(os.path.join("~", ".pyiron"))
-        if os.path.isfile(config_file):
-            self._config_parse_file(config_file)
-        elif not any([env in environment_keys
-                      for env in ['TRAVIS', 'APPVEYOR', 'CIRCLECI', 'CONDA_BUILD', 'GITLAB_CI']]):
             user_input = None
             while user_input not in ['yes', 'no']:
-                user_input = input('It appears that pyiron is not yet configured, do you want to create a default start configuration (recommended: yes). [yes/no]:')
+                user_input = input('It appears that pyiron is not yet configured, do you want to create a default start configuration (recommended: yes). [yes/no]: ')
             if user_input.lower() == 'yes' or user_input.lower() == 'y':
                 install_pyiron(config_file_name=config_file,
                                zip_file="resources.zip",
@@ -92,8 +87,23 @@ class Settings(with_metaclass(Singleton)):
                                giturl_for_zip_file="https://github.com/pyiron/pyiron-resources/archive/master.zip",
                                git_folder_name="pyiron-resources-master")
             else:
-                raise ValueError('pyiron was not installed!')
-            self._config_parse_file(config_file)
+                user_input = None #reset input
+                while user_input not in ['yes', 'no']:
+                    user_input = input('Do you want to provide an alternative configuration (recommended: yes). [yes/no]: ')
+                if user_input.lower() == 'yes' or user_input.lower() == 'y':
+                    location = input("Location for pyiron folder and config file (DEFAULT = '.'): ")
+                    if location=='': location='.'
+                    if not location[-1]=='/': location+='/'
+                    config_file = os.path.join(location, ".pyiron")
+                    install_pyiron(config_file_name=config_file,
+                                   zip_file="resources.zip",
+                                   project_path=os.path.join(location,"pyiron/projects"),
+                                   resource_directory=os.path.join(location,"pyiron/resources"),
+                                   giturl_for_zip_file="https://github.com/SanderBorgmans/pyiron-resources/archive/hpc_ugent.zip",
+                                   git_folder_name="pyiron-resources-hpc_ugent")
+                else:
+                    raise ValueError('pyiron was not installed!')
+        self._config_parse_file(config_file)
 
         # Take dictionary as primary source - overwrite everything
         if isinstance(config, dict):
@@ -108,7 +118,8 @@ class Settings(with_metaclass(Singleton)):
         self._configuration['project_paths'] = [convert_path(path) + '/' if path[-1] != '/' else convert_path(path)
                                                 for path in self._configuration['project_paths']]
         self._configuration['resource_paths'] = [convert_path(path)
-                                                for path in self._configuration['resource_paths']]   
+                                                for path in self._configuration['resource_paths']]
+
 
         # Build the SQLalchemy connection strings
         if self._configuration['sql_type'] == 'Postgres':
@@ -231,10 +242,10 @@ class Settings(with_metaclass(Singleton)):
             self.close_connection()
             self._database = DatabaseAccess('sqlite:///' + file_name,
                                             self._configuration['sql_table_name'])
-            self._use_local_database = True 
+            self._use_local_database = True
         else:
             print('Database is already in local mode!')
-            
+
     def switch_to_central_database(self):
         """
         Switch to central database
@@ -246,7 +257,7 @@ class Settings(with_metaclass(Singleton)):
             self._use_local_database = False
         else:
             print('Database is already in central mode!')
-            
+
     def switch_to_viewer_mode(self):
         """
         Switch from user mode to viewer mode - if viewer_mode is enable pyiron has read only access to the database.
