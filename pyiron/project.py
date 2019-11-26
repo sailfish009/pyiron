@@ -286,8 +286,10 @@ class Project(ProjectCore):
             print("job was stored with the job ID ", str(ham._job_id))
             try:
                 if os.path.abspath(project_to_import_from):
+                    print('import_single_calculation: error check1')
                     ham.from_directory(project_to_import_from.replace("\\", "/"))
                 else:
+                    print('import_single_calculation: error check2')
                     ham.from_directory(
                         os.path.join(self.path, project_to_import_from).replace(
                             "\\", "/"

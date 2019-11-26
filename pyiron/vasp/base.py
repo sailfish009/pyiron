@@ -558,6 +558,7 @@ class VaspBase(GenericDFTJob):
             directory (str): Path to the directory
         """
         if not self.status.finished:
+            print('from_directory: error check1')
             # _ = s.top_path(directory)
             files = self._decompress_files_in_directory(directory)
             vp_new = Vr()
@@ -629,6 +630,7 @@ class VaspBase(GenericDFTJob):
             self.to_hdf()
             self.status.finished = True
         else:
+            print('from_directory: error check2')
             return
 
     def stop_calculation(self, next_electronic_step=False):
