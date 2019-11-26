@@ -572,6 +572,10 @@ class VaspBase(GenericDFTJob):
                 if "vasprun.xml" in files:
                     vp_new.from_file(filename=posixpath.join(directory, "vasprun.xml"))
                     self.structure = vp_new.get_initial_structure()
+                    print('from_directory: posixpath', posixpath)
+                    print('from_directory: directory', directory)
+                    print('from_directory: filename', posixpath.join(directory, "vasprun.xml"))
+                    print('from_directory: structure', vp_new.get_initial_structure())
             except (IOError, VasprunError):  # except AssertionError:
                 print('from_directory: error check12')
                 pass
