@@ -201,8 +201,10 @@ class Vasprun(object):
                 if leaf.attrib["name"] == "atomtypes":
                     for item in leaf:
                         if item.tag == "set":
+                            print('error check - atominfo in vasprun')
                             for sp in item:
                                 elements = sp
+                                print('error check - atominfo in vasprun: elements', elements)
                                 if elements[1].text in species_dict.keys():
                                     pse = PeriodicTable()
                                     count = 1
