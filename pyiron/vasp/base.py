@@ -567,15 +567,19 @@ class VaspBase(GenericDFTJob):
             try:
                 print('from_directory: error check11')
                 if not ("OUTCAR" in files or "vasprun.xml" in files):
+                    print('from_directory: error check111')
                     raise IOError("This file isn't present")
                     # raise AssertionError("OUTCAR/vasprun.xml should be present in order to import from directory")
+                print('from_directory: error check11a')
                 if "vasprun.xml" in files:
+                    print('from_directory: error check112')
                     vp_new.from_file(filename=posixpath.join(directory, "vasprun.xml"))
                     self.structure = vp_new.get_initial_structure()
                     print('from_directory: posixpath', posixpath)
                     print('from_directory: directory', directory)
                     print('from_directory: filename', posixpath.join(directory, "vasprun.xml"))
                     print('from_directory: structure', vp_new.get_initial_structure())
+                print('from_directory: error check11b')
             except (IOError, VasprunError):  # except AssertionError:
                 print('from_directory: error check12')
                 pass
