@@ -565,6 +565,7 @@ class VaspBase(GenericDFTJob):
             print('from_directory: files', files)
             vp_new = Vr()
             try:
+                print('from_directory: error check11')
                 if not ("OUTCAR" in files or "vasprun.xml" in files):
                     raise IOError("This file isn't present")
                     # raise AssertionError("OUTCAR/vasprun.xml should be present in order to import from directory")
@@ -572,9 +573,11 @@ class VaspBase(GenericDFTJob):
                     vp_new.from_file(filename=posixpath.join(directory, "vasprun.xml"))
                     self.structure = vp_new.get_initial_structure()
             except (IOError, VasprunError):  # except AssertionError:
+                print('from_directory: error check12')
                 pass
                 # raise AssertionError("OUTCAR/vasprun.xml should be present in order to import from directory")
             if "INCAR" in files:
+                print('from_directory: error check13')
                 try:
                     self.input.incar.read_input(
                         posixpath.join(directory, "INCAR"), ignore_trigger="!"
@@ -582,6 +585,7 @@ class VaspBase(GenericDFTJob):
                 except (IndexError, TypeError, ValueError):
                     pass
             if "KPOINTS" in files:
+                print('from_directory: error check14')
                 try:
                     self.input.kpoints.read_input(
                         posixpath.join(directory, "KPOINTS"), ignore_trigger="!"
@@ -589,12 +593,15 @@ class VaspBase(GenericDFTJob):
                 except (IndexError, TypeError, ValueError):
                     pass
             if "POSCAR" in files and "POTCAR" in files:
+                print('from_directory: error check15')
                 structure = read_atoms(
                     posixpath.join(directory, "POSCAR"), species_from_potcar=True
                 )
             else:
+                print('from_directory: error check16')
                 structure = vp_new.get_initial_structure()
             self.structure = structure
+            print('from_directory: structure', structure)
             # Read initial magnetic moments from the INCAR file and set it to the structure
             magmom_loc = np.array(self.input.incar._dataset["Parameter"]) == "MAGMOM"
             if any(magmom_loc):
