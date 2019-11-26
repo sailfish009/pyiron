@@ -561,6 +561,8 @@ class VaspBase(GenericDFTJob):
             print('from_directory: error check1')
             # _ = s.top_path(directory)
             files = self._decompress_files_in_directory(directory)
+            print('from_directory: directory', directory)
+            print('from_directory: files', files)
             vp_new = Vr()
             try:
                 if not ("OUTCAR" in files or "vasprun.xml" in files):
@@ -623,12 +625,17 @@ class VaspBase(GenericDFTJob):
                     )
 
             self._write_chemical_formular_to_database()
+            print('from_directory: chemical_formular', self._write_chemical_formular_to_database())
             self._import_directory = directory
+            print('from_directory: import_directory', self._import_directory)
             self.status.collect = True
+            print('from_directory: status.collect', self.status.collect)
             # self.to_hdf()
             self.collect_output()
+            print('from_directory: collect_output', self.collect_output())
             self.to_hdf()
             self.status.finished = True
+            print('from_directory: status', self.status.finished)
         else:
             print('from_directory: error check2')
             return
