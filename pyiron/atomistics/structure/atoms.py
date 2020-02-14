@@ -3184,7 +3184,7 @@ class Atoms(object):
 
                     if len(element_magmom) == 1:
                         for ind in index:
-                            self.spin[ind] = element_magmom
+                            self.spin[ind] = element_magmom[0]
                     else:
                         for i, ind in enumerate(index):
                             self.spin[ind] = element_magmom[i]
