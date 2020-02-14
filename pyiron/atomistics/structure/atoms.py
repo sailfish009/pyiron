@@ -3151,10 +3151,21 @@ class Atoms(object):
 
     def set_initial_magnetic_moments(self, magmoms):
         """
-        Set array of initial magnetic moments.
+        Set initial magnetic moments.
 
         Args:
-            magmoms (dict/numpy.ndarray/list):
+            magmoms (dict/numpy.ndarray/list): new magnetic moments as list or dictionary.
+
+        Comments:
+            Magmoms can be either a list/array or a dictionary.
+            List:
+                Spin for all atoms has to be given. Take care of the correct order!
+            Dict:
+                An entry for each species has to be given. You have two possibilities. Provide only one spin for a
+                species, all atoms of that species will get the same value. Provide a list of values for each atom
+                inside. A combination is possible.
+
+                E.g. {'Fe': [3.2], 'Mg': [2.2, 2.3, ... ]}
         """
         if magmoms is not None:
             for ind, element in enumerate(self.get_chemical_elements()):
