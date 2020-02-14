@@ -290,6 +290,48 @@ class TestAtoms(unittest.TestCase):
             basis.scaled_positions = np.array([[0.5, 0.5, 0.5]])
             self.assertTrue(np.array_equal(basis.scaled_positions, [[0.5, 0.5, 0.5]]))
 
+    def test_set_initial_magnetic_moments(self):
+        atoms = Atoms(
+            ["Fe", "Se"],
+            scaled_positions=[[0, 0, 0], [0.25, 0.25, 0.25]],
+            cell=np.identity(3)
+        )
+        atoms = atoms.repeat([2, 2, 2])
+
+        spin_list = [i for i in range(16)]
+        spin_list_3d = [[0, 0, i**2] for i in range(16)]
+
+        spin_dict = {"Fe": 23, "Se": [1, 2, 3, 4, 5, 6, 7, 8], "Mg": [22, 33, 44]}
+        result_list = [23, 1, 23, 2, 23, 3, 23, 4, 23, 5, 23, 6, 23, 7, 23, 8]
+
+        spin_dict_wrong_1 = {"Fe": 23, "Mg": 22}
+        spin_dict_wrong_2 = {"Fe": "pyiron rules!", "Se": 6}
+        spin_dict_wrong_3 = {"Fe": [1, 2, 3, 4], "Se": 7}
+
+        atoms.set_initial_magnetic_moments(spin_list)
+        self.assertEqual([el.spin for el in atoms], spin_list)
+
+        atoms.set_initial_magnetic_moments(spin_list_3d)
+        self.assertEqual([el.spin for el in atoms], spin_list_3d)
+
+        atoms.set_initial_magnetic_moments(spin_dict)
+        self.assertEqual([el.spin for el in atoms], result_list)
+
+        with self.assertRaises(KeyError):
+            atoms.set_initial_magnetic_moments(spin_dict_wrong_1)
+
+        with self.assertRaises(AssertionError):
+            atoms.set_initial_magnetic_moments(spin_dict_wrong_2)
+
+        with self.assertRaises(AssertionError):
+            atoms.set_initial_magnetic_moments(spin_dict_wrong_3)
+
+        with self.assertRaises(AssertionError):
+            atoms.set_initial_magnetic_moments(4)
+
+        with self.assertRaises(AssertionError):
+            atoms.set_initial_magnetic_moments("pyiron rules")
+
     def test_cell(self):
         CO = Atoms(
             "CO",
