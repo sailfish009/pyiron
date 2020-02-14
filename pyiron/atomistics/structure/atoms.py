@@ -3154,18 +3154,53 @@ class Atoms(object):
         Set array of initial magnetic moments.
 
         Args:
-            magmoms (numpy.array()):
+            magmoms (dict/numpy.ndarray/list):
         """
         if magmoms is not None:
-            if len(magmoms) != len(self):
-                raise ValueError("magmons can be collinear or non-collinear.")
             for ind, element in enumerate(self.get_chemical_elements()):
                 if "spin" in element.tags.keys():
                     self[ind] = element.Parent
             if "spin" not in self._tag_list._lists.keys():
                 self.add_tag(spin=None)
-            for ind, spin in enumerate(magmoms):
-                self.spin[ind] = spin
+
+            if isinstance(magmoms, dict):
+                for element in self.get_species_symbols():
+                    if element not in magmoms.keys():
+                        raise KeyError("'{}' is not in list of elements".format(element))
+                    element_magmom = magmoms[element]
+                    index = [ind for ind, el in enumerate(self.get_chemical_elements()) if el.symbol == element]
+
+                    if isinstance(element_magmom, int):
+                        element_magmom = [element_magmom]
+
+                    assert (
+                            isinstance(element_magmom, np.ndarray) or isinstance(element_magmom, list)
+                    ), "'magmoms' for element '{}' has to be a list or numpy.array".format(element)
+
+                    element_magmom = np.asarray(element_magmom)
+                    assert (
+                        len(element_magmom) == len(index) or len(element_magmom) == 1
+                    ), "Wrong number of spins given for element '{}'".format(element)
+
+                    if len(element_magmom) == 1:
+                        for ind in index:
+                            self.spin[ind] = element_magmom
+                    else:
+                        for i, ind in enumerate(index):
+                            self.spin[ind] = element_magmom[i]
+            else:
+                if isinstance(magmoms, int):
+                    magmoms = [magmoms]
+                assert (
+                    isinstance(magmoms, np.ndarray) or isinstance(magmoms, list)
+                ), "'magmoms' has to be a list or numpy.array"
+
+                assert (
+                    len(magmoms) == len(self)
+                ), "Wrong number of spins."
+
+                for ind, spin in enumerate(magmoms):
+                    self.spin[ind] = spin
 
     def pop(self, i=-1):
         """
