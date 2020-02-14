@@ -3170,7 +3170,7 @@ class Atoms(object):
                     element_magmom = magmoms[element]
                     index = [ind for ind, el in enumerate(self.get_chemical_elements()) if el.symbol == element]
 
-                    if isinstance(element_magmom, int):
+                    if isinstance(element_magmom, int) or isinstance(element_magmom, float):
                         element_magmom = [element_magmom]
 
                     assert (
@@ -3189,7 +3189,7 @@ class Atoms(object):
                         for i, ind in enumerate(index):
                             self.spin[ind] = element_magmom[i]
             else:
-                if isinstance(magmoms, int):
+                if isinstance(magmoms, int) or isinstance(magmoms, float):
                     magmoms = [magmoms]
                 assert (
                     isinstance(magmoms, np.ndarray) or isinstance(magmoms, list)
