@@ -3166,6 +3166,10 @@ class Atoms(object):
                 inside. A combination is possible.
 
                 E.g. {'Fe': [3.2], 'Mg': [2.2, 2.3, ... ]}
+
+                Set non-collinear spins as follows:
+                
+                E.g. {'Fe': [[0.0, 0.0, 3.2]], 'Mg': [[0.0, 0.0, 2.2], [0.0, 0.0, 2.3], ...]}
         """
         if magmoms is not None:
             for ind, element in enumerate(self.get_chemical_elements()):
