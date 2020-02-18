@@ -227,7 +227,8 @@ class Atoms(object):
                 self.pbc = True  # default setting
             else:
                 self.pbc = pbc
-        self.set_initial_magnetic_moments(magmoms)
+        if magmoms is not None:
+            self.set_initial_magnetic_moments(magmoms)
         self._high_symmetry_points = None
         if high_symmetry_points is not None:
             self.set_high_symmetry_points(high_symmetry_points)
@@ -3171,51 +3172,49 @@ class Atoms(object):
                 
                 E.g. {'Fe': [[0.0, 0.0, 3.2]], 'Mg': [[0.0, 0.0, 2.2], [0.0, 0.0, 2.3], ...]}
         """
-        if magmoms is not None:
-            for ind, element in enumerate(self.get_chemical_elements()):
-                if "spin" in element.tags.keys():
-                    self[ind] = element.Parent
-            if "spin" not in self._tag_list._lists.keys():
-                self.add_tag(spin=None)
+        for ind, element in enumerate(self.get_chemical_elements()):
+            if "spin" in element.tags.keys():
+                self[ind] = element.Parent
+        if "spin" not in self._tag_list._lists.keys():
+            self.add_tag(spin=None)
 
-            if isinstance(magmoms, dict):
-                for element in self.get_species_symbols():
-                    if element not in magmoms.keys():
-                        raise KeyError("'{}' is not in list of elements".format(element))
-                    element_magmom = magmoms[element]
-                    index = [ind for ind, el in enumerate(self.get_chemical_elements()) if el.symbol == element]
+        if isinstance(magmoms, dict):
+            for element in self.get_species_symbols():
+                if element not in magmoms.keys():
+                    raise KeyError("'{}' is not in list of elements".format(element))
+                element_magmom = magmoms[element]
+                index = self.select_index(element)
 
-                    if isinstance(element_magmom, int) or isinstance(element_magmom, float):
-                        element_magmom = [element_magmom]
-
-                    assert (
-                            isinstance(element_magmom, np.ndarray) or isinstance(element_magmom, list)
-                    ), "'magmoms' for element '{}' has to be a list or numpy.array".format(element)
-
-                    element_magmom = np.asarray(element_magmom)
-                    assert (
-                        len(element_magmom) == len(index) or len(element_magmom) == 1
-                    ), "Wrong number of spins given for element '{}'".format(element)
-
-                    if len(element_magmom) == 1:
-                        for ind in index:
-                            self.spin[ind] = element_magmom[0]
-                    else:
-                        for i, ind in enumerate(index):
-                            self.spin[ind] = element_magmom[i]
-            else:
-                if isinstance(magmoms, int) or isinstance(magmoms, float):
-                    magmoms = [magmoms]
-                assert (
-                    isinstance(magmoms, np.ndarray) or isinstance(magmoms, list)
-                ), "'magmoms' has to be a list or numpy.array"
+                if isinstance(element_magmom, (int, float)):
+                    element_magmom = [element_magmom]
 
                 assert (
-                    len(magmoms) == len(self)
-                ), "Wrong number of spins."
+                        isinstance(element_magmom, (list, np.ndarray))
+                ), "'magmoms' for element '{}' has to be a list or numpy.array".format(element)
 
-                for ind, spin in enumerate(magmoms):
-                    self.spin[ind] = spin
+                #element_magmom = np.asarray(element_magmom)
+                assert (
+                    len(element_magmom) == len(index) or len(element_magmom) == 1
+                ), "Wrong number of spins given for element '{}'".format(element)
+
+                if len(element_magmom) == 1:
+                    self.spin[index] = element_magmom[0]
+                else:
+                    for i, ind in enumerate(index):
+                        self.spin[ind] = element_magmom[i]
+        else:
+            if isinstance(magmoms, (int, float)):
+                magmoms = [magmoms]
+            assert (
+                isinstance(magmoms, (list, np.ndarray))
+            ), "'magmoms' has to be a list or numpy.array"
+
+            assert (
+                len(magmoms) == len(self)
+            ), "Wrong number of spins."
+
+            for ind, spin in enumerate(magmoms):
+                self.spin[ind] = spin
 
     def pop(self, i=-1):
         """
