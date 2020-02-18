@@ -309,13 +309,13 @@ class TestAtoms(unittest.TestCase):
         spin_dict_wrong_3 = {"Fe": [1, 2, 3, 4], "Se": 7}
 
         atoms.set_initial_magnetic_moments(spin_list)
-        self.assertEqual([el.spin for el in atoms], spin_list)
+        self.assertEqual(atoms.spin.list(), spin_list)
 
         atoms.set_initial_magnetic_moments(spin_list_3d)
-        self.assertEqual([el.spin for el in atoms], spin_list_3d)
+        self.assertEqual(atoms.spin.list(), spin_list_3d)
 
         atoms.set_initial_magnetic_moments(spin_dict)
-        self.assertEqual([el.spin for el in atoms], result_list)
+        self.assertEqual(atoms.spin.list(), result_list)
 
         with self.assertRaises(KeyError):
             atoms.set_initial_magnetic_moments(spin_dict_wrong_1)
