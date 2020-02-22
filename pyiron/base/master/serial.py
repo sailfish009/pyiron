@@ -492,6 +492,9 @@ class SerialMasterBase(GenericMaster):
         suspended previously, the job is going to be started again, to be continued.
         """
         self.logger.info("CALLING RUNIF REFRESH")
+        df = self.project.job_table()
+        n_finished_jobs = len(df[df["status"] == "finished"].status.tolist())
+        self.logger.info("No of finished jobs:", n_finished_jobs)
         conv_goal_exists = bool(self._convergence_goal)
         self._logger.info("Does the convergence goal exit: {}".format(conv_goal_exists))
         if not conv_goal_exists:
