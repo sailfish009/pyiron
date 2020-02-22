@@ -360,10 +360,10 @@ class SerialMasterBase(GenericMaster):
         job.run()
 
     def _run_if_master_queue(self, job):
+        self.logger.info("Running runif master queue")
         job.run()
         if job.python_execution_process:
             job.python_execution_process.communicate()
-        print("calling run if refresh")
         self.run_if_refresh()
 
     def _run_if_master_non_modal_child_non_modal(self, job):
@@ -388,6 +388,7 @@ class SerialMasterBase(GenericMaster):
             job = self._get_job_template()
             self.status.suspended = True
             if self.server.run_mode.queue:
+                print("calling run if master queue")
                 self._run_if_master_queue(job)
             elif self.server.run_mode.non_modal and job.server.run_mode.non_modal:
                 self._run_if_master_non_modal_child_non_modal(job)
