@@ -490,6 +490,7 @@ class SerialMasterBase(GenericMaster):
         Internal helper function the run if refresh function is called when the job status is 'refresh'. If the job was
         suspended previously, the job is going to be started again, to be continued.
         """
+        print("CALLING RUNIF REFRESH")
         conv_goal_exists = bool(self._convergence_goal)
         self._logger.info("Does the convergence goal exit: {}".format(conv_goal_exists))
         if not conv_goal_exists:
