@@ -1030,6 +1030,7 @@ class GenericJob(JobCore):
         set to busy and if the master is in status busy at the end of the update_master process another update is
         triggered.
         """
+        self.logger.into("Updating master")
         master_id = self.master_id
         project = self.project
         self._logger.info("update master: {} {} {}".format(master_id, self.get_job_id(), self.server.run_mode))
@@ -1397,6 +1398,7 @@ class GenericJob(JobCore):
         the simulation output using the standardized functions collect_output() and collect_logfiles(). Afterwards the
         status is set to 'finished'
         """
+        self.logger.info("Calling run if collect")
         self.collect_output()
         self.collect_logfiles()
         if self.job_id is not None:
