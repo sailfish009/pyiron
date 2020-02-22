@@ -504,9 +504,11 @@ class SerialMasterBase(GenericMaster):
                     for child_id in self.child_ids
                 ]
             )
+            self.logger.info("subjobs_statuses", subjobs_statuses)
             if len(subjobs_statuses) == 0 or subjobs_statuses == {"finished"}:
                 ham = self._convergence_goal(self, **self._convergence_goal_qwargs)
                 if ham is not True:
+                    self.logger.info("appending new hamilton")
                     self.append(ham)
                     self.to_hdf()
                     self.run_static()
