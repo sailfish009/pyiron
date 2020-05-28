@@ -7,6 +7,7 @@ import os
 import posixpath
 from string import punctuation
 from pyiron.base.project.generic import Project as ProjectCore
+from numpy import random
 
 try:
     from pyiron.base.project.gui import ProjectGUI
@@ -672,3 +673,88 @@ class Project(ProjectCore):
 
         """
         ProjectGUI(self)
+
+    @staticmethod
+    def create_thesis_title(topic=None):
+        """
+        This function returns you a possible title of your PhD thesis
+        based on the calculations you run in this project.
+
+        Args:
+            topic(str/None): Provide a topic of your thesis. If it is suitable, the code will consider it.
+
+        Returns:
+            str: title of your thesis.
+        """
+        if topic is not None:
+            if isinstance(topic, str):
+                print("Based on your caluclations the provided topic is not suited as PhD topic."
+                      "We will give you a better one!")
+            else:
+                raise ValueError("'topic' has to be a string! Maybe you are not worth a PhD!")
+
+        the_title = [
+            ["Ab initio"],
+            [
+                "investgation",
+                "description",
+                "methodology"
+            ],
+            ["of"],
+            [
+                "pressure",
+                "temperature",
+                "charge"
+            ],
+            [
+                "dependent",
+                "independent"
+            ],
+            [
+                "grain boundary segregation",
+                "stacking fault energies",
+                "phase transition",
+                "melting point temperatures",
+                "vacancy formation energies",
+                "time reversal symmetry breaking",
+                "impurity concentrations",
+                "H absorption",
+                "Friedel oscillations",
+                "free electronic gas",
+                "phonon life times"
+            ],
+            ["in the"],
+            [
+                "presence",
+                "absence"
+            ],
+            ["of"],
+            [
+                "magnetism",
+                "chemical disorder",
+                "point defects",
+                "van der Waals forces"
+            ],
+            ["for"],
+            [
+                "high entropy alloys",
+                "FeMg",
+                "super alloys",
+                "solid-liquid interfaces",
+                "Mg corrosion",
+                "medium-entropy single-phase alloys",
+                "Fe-based superconductors",
+                "a single H-atom",
+                "all transition metals of the periodic table",
+                "binaries including Oxygen",
+                "3-5 semiconductors",
+                "strongly correlated materials",
+                "a toy model of bulk Fe"
+            ]
+        ]
+
+        the_final_title = []
+        for t in the_title:
+            the_final_title.append(t[random.randint(0, len(t))])
+
+        return " ".join(the_final_title)
