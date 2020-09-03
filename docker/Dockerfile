@@ -1,5 +1,6 @@
 FROM alpine:3.8
 MAINTAINER Jan Janssen <janssen@mpie.de>
+## Modified by Muhammad Hassani <hassani@mpie.de>
 
 # Inspired by :
 # * https://github.com/jupyter/docker-stacks
@@ -72,9 +73,12 @@ RUN cd /tmp \
     && conda env update -n root -f "${HOME}/binder/environment.yml" \
     && conda install --yes -c conda-forge nodejs \
     && ${SHELL} ${HOME}/binder/postBuild \
-    && ${CONDA_DIR}/bin/pip install --force-reinstall --no-deps --pre pyiron \
+    && conda install -c conda-forge pyiron \
     && conda clean --all -y \
     && rm ${HOME}/Dockerfile ${HOME}/deploy.sh
+
+#if you are interested to run the notebooks on jupyterhub, the following line should be uncommented
+#RUN conda install jupyterhub
 
 USER root
 
@@ -82,6 +86,10 @@ USER root
 WORKDIR ${HOME}/
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
+#if you are interested to run the notebooks on jupyterhub, the above command should be replaced with the following:
+#CMD ["jupyterhub-singleuser"]
 
 # Switch back to pyiron to avoid accidental container runs as root
 USER ${PYIRON_USER}
+
+
